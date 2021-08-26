@@ -14,10 +14,12 @@ const labelStyle={
 function Fructis({SETDATA,DATA}) {
     const[visible,setVisible] = useState(false);
     const[finded,setFinded] = useState({});
+    const[filterTable,setFilterTable]= useState();
+    const[dataSrc,setDataSrc]= useState();
+    const[value,setValue]= useState();
     const handleModal=()=> {
         setVisible(!visible)
     }
-    const[filterTable,setFilterTable]= useState();
     const bringData=()=>{
         dataApi.getData()
             .then(res=> {
@@ -90,17 +92,41 @@ function Fructis({SETDATA,DATA}) {
         );
         setFilterTable(fTable);
     }
+    // const searchName=(e)=>{
+    //     e.preventDefault();
+    //     let {value} = e.target;
+    //     const fTable = dataSource.filter(o =>
+    //         Object.keys(o).some(k =>
+    //             String(o[k])
+    //                 .toLowerCase()
+    //                 .includes(value.toLowerCase())
+    //         )
+    //     );
+    //     setFilterTable(fTable);
+    // }
     return(
         <>
             {console.log('finded',finded)}
             <div style={{padding:'15px'}}>
+                {/*<Input*/}
+                {/*    style={{ margin: "0 0 10px 0" }}*/}
+                {/*    placeholder="Search by..."*/}
+                {/*    enterButton*/}
+                {/*    onChange={(e)=>searchData(e)}*/}
+                {/*/>*/}
                 <Input
-                    style={{ margin: "0 0 10px 0" }}
-                    placeholder="Search by..."
-                    enterButton
-                    onChange={(e)=>searchData(e)}
+                    placeholder="Search Name"
+                    value={value}
+                    onChange={e => {
+                        const currValue = e.target.value;
+                        setValue(currValue);
+                        const filteredData = DATA.items.filter(entry =>
+                            entry.name.includes(currValue)
+                        );
+                        setDataSrc(filteredData);
+                    }}
                 />
-                <Table dataSource={filterTable == null ? dataSource : filterTable} columns={columns} />
+                <Table dataSource={dataSrc == null ? dataSource : dataSrc} columns={columns} />
             </div>
             <Modal
                 title="Description modal"
