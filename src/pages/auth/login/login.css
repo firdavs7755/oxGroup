@@ -1,0 +1,11 @@
+.login-wrap{
+    max-width: 1200px;
+    margin: auto;
+    text-align: center;
+    margin-top: 7%;
+    width: 27%;
+    padding:15px;
+    border:1px solid rgba(82, 78, 78, 0.28);
+    box-shadow: 2px 5px 3px;
+}
+
