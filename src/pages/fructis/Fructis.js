@@ -10,11 +10,46 @@ const labelStyle={
     fontWeight:'500',
     fontSize:'16px'
 }
-
+const arr=[
+    {
+        id:1,
+        name:'Olmamhfjhfkkjk'
+    },
+    {
+        id:2,
+        name:'Nok'
+    },
+    {
+        id:3,
+        name:'Banan'
+    },
+    {
+        id:6,
+        name:'Ananas'
+    },
+    {
+        id:4,
+        name:'Olcha'
+    },
+    {
+        id:5,
+        name:'Anor'
+    },
+    {
+        id:6,
+        name:'gana'
+    },
+    {
+        id:7,
+        name:'Aba'
+    }
+]
 function Fructis({SETDATA,DATA}) {
     const[visible,setVisible] = useState(false);
     const[finded,setFinded] = useState({});
     const[filterTable,setFilterTable]= useState();
+    const[filteredInfo,setFilteredInfo]=useState({});
+    const[sortedInfo,setSortedInfo]= useState({});
     const[dataSrc,setDataSrc]= useState();
     const[value,setValue]= useState();
     const handleModal=()=> {
@@ -34,7 +69,27 @@ function Fructis({SETDATA,DATA}) {
         handleModal()
         setFinded(DATA.items.find(item=>item.id===id));
     }
+
     const dataSource = DATA.items;
+    const arrCol=[
+        {
+            title:'id',
+            dataIndex:'id',
+            key:'id'
+        },
+        {
+            title:'name',
+            dataIndex:'name',
+            key:'name',
+            sorter: (a, b) => {
+                if (a.name>b.name) return -1;
+                if (a.name < b.name)
+                    return 1
+                return 0
+            },
+            // sortDirections: ['ascend'],
+        },
+    ];
     const columns = [
         {
             title: 'TR',
@@ -49,10 +104,7 @@ function Fructis({SETDATA,DATA}) {
             title: 'Name',
             dataIndex: 'name',
             key: 'name',
-            width:'25%',
-            render:(text)=>(
-                <p>{text}</p>
-            )
+            width:'25%'
         },
         {
             title: 'barcode',
@@ -80,7 +132,7 @@ function Fructis({SETDATA,DATA}) {
         },
     ];
 
-    const searchData=(e)=>{
+    const searchName=(e)=>{
         e.preventDefault();
         let {value} = e.target;
         const fTable = dataSource.filter(o =>
@@ -90,43 +142,36 @@ function Fructis({SETDATA,DATA}) {
                     .includes(value.toLowerCase())
             )
         );
-        setFilterTable(fTable);
+        let l = []
+        fTable.forEach(item=>{
+            const i = item.name.toLowerCase().indexOf(value.toLowerCase());
+            l.push({...item, target: i});
+        })
+        l.sort((a, b)=>{
+            if (a.target > b.target) {
+                return 1;
+            }
+            if (a.target < b.target) {
+                return -1;
+            }
+            if (a.target === b.target){
+                return a.name.toLowerCase().localeCompare(b.name.toLowerCase());
+            }
+            return 0;
+        })
+        setFilterTable(l);
     }
-    // const searchName=(e)=>{
-    //     e.preventDefault();
-    //     let {value} = e.target;
-    //     const fTable = dataSource.filter(o =>
-    //         Object.keys(o).some(k =>
-    //             String(o[k])
-    //                 .toLowerCase()
-    //                 .includes(value.toLowerCase())
-    //         )
-    //     );
-    //     setFilterTable(fTable);
-    // }
+
     return(
         <>
             {console.log('finded',finded)}
             <div style={{padding:'15px'}}>
-                {/*<Input*/}
-                {/*    style={{ margin: "0 0 10px 0" }}*/}
-                {/*    placeholder="Search by..."*/}
-                {/*    enterButton*/}
-                {/*    onChange={(e)=>searchData(e)}*/}
-                {/*/>*/}
                 <Input
                     placeholder="Search Name"
                     value={value}
-                    onChange={e => {
-                        const currValue = e.target.value;
-                        setValue(currValue);
-                        const filteredData = DATA.items.filter(entry =>
-                            entry.name.includes(currValue)
-                        );
-                        setDataSrc(filteredData);
-                    }}
+                    onChange={(e) => searchName(e)}
                 />
-                <Table dataSource={dataSrc == null ? dataSource : dataSrc} columns={columns} />
+                <Table dataSource={filterTable==null?dataSource:filterTable} columns={columns} />
             </div>
             <Modal
                 title="Description modal"
